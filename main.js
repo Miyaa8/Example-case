@@ -1,7 +1,7 @@
 /**
- * Originaly script by faiz
- * Recode by mega
- * Belum selesai
+ * Originaly Script By Faiz
+ * Recode By Mega
+ * Arigatou Faiz
  */
 
 const con = require('./core/connect')
@@ -74,7 +74,30 @@ Available Feature
 5. *${prefix}kisahnabi*
 6. *${prefix}quoteislam*
 7. *${prefix}scdl*
-8. *${prefix}ppcouple*`, msg)
+8. *${prefix}ppcouple*
+9. *${prefix}randomaesthetic*
+10. *${prefix}asupan*
+11. *${prefix}igdl*`, msg)
+                break
+            case 'igdl':
+                var ini_url = body.slice(6)
+                var ini_url2 = await axios.get(`https://lindow-api.herokuapp.com/api/igdl?link=${ini_url}&apikey=${apikey}`)
+                var ini_url3 = ini_url2.data.result.url
+                var ini_type = MessageType.image
+                if (ini_url3.includes(".mp4")) ini_type = MessageType.video
+                var ini_buffer = await getBuffer(ini_url3)
+                var inicaption = `Username account : ${ini_url2.data.result.username}\n\nCaption : ${ini_url2.data.result.caption}\n\nShortcode : ${ini_url2.data.result.shortcode}\n\nDate : ${ini_url2.data.result.date}`
+                ev.sendMessage(from, ini_buffer, ini_type, {quoted: msg, caption: `${inicaption}`})
+                break
+            case 'asupan':
+                  getBuffer(`https://lindow-api.herokuapp.com/api/asupan?apikey=${apikey}`).then((vid) => {
+                  ev.sendMessage(from, vid, MessageType.video, {mimetype: 'video/mp4', filename: `estetod.mp4`, quoted: msg, caption: 'success'})
+                })
+                break
+            case 'randomaesthetic':
+                  getBuffer(`https://lindow-api.herokuapp.com/api/randomaesthetic?apikey=${apikey}`).then((estetik) => {
+                  ev.sendMessage(from, estetik, MessageType.video, {mimetype: 'video/mp4', filename: `estetod.mp4`, quoted: msg, caption: 'success'})
+                })
                 break
             case 'ppcouple':
                 getres = await axios.get(`https://lindow-api.herokuapp.com/api/ppcouple?apikey=${apikey}`)
