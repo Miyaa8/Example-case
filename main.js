@@ -245,58 +245,61 @@ Available Feature
 	    case 'stickergif':
             case 'stikergif':
 	      if ((isMedia && !msg.message.videoMessage || isQImg) && args.length == 0) {
-						const encmedia = isQImg ? JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo : msg
-						const media = await ev.downloadAndSaveMediaMessage(encmedia)
-						ran = getRandom('.webp')
-						await ffmpeg(`./${media}`)
-							.input(media)
-							.on('start', function (cmd) {
-								console.log(`Started : ${cmd}`)
-							})
-							.on('error', function (err) {
-								console.log(`Error : ${err}`)
-								fs.unlinkSync(media)
-								wa.reply(from, 'error', msg)
-							})
-							.on('end', function () {
-								console.log('Finish')
-								ev.sendMessage(from, fs.readFileSync(ran), MessageType.sticker, {quoted: msg})
-								fs.unlinkSync(media)
-								fs.unlinkSync(ran)
-							})
-							.addOutputOptions([`-vcodec`,`libwebp`,`-vf`,`scale='min(320,iw)':min'(320,ih)':force_original_aspect_ratio=decrease,fps=15, pad=320:320:-1:-1:color=white@0.0, split [a][b]; [a] palettegen=reserve_transparent=on:transparency_color=ffffff [p]; [b][p] paletteuse`])
-							.toFormat('webp')
-							.save(ran)
-						} else if ((isMedia && msg.message.videoMessage || isQVid && msg.message.extendedTextMessage.contextInfo.quotedMessage.videoMessage) && args.length == 0) {
-						const encmedia = isQVid ? JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo : msg
-						const media = await ev.downloadAndSaveMediaMessage(encmedia)
-						if (Buffer.byteLength(media) >= 6186598.4) return wa.reply(from, `sizenya terlalu gede sayang, dd gakuat :(`, msg)
-						ran = getRandom('.webp')
-						await ffmpeg(`./${media}`)
-							.inputFormat(media.split('.')[1])
-							.on('start', function (cmd) {
-								console.log(`Started : ${cmd}`)
-							})
-							.on('error', function (err) {
-								console.log(`Error : ${err}`)
-								fs.unlinkSync(media)
-								tipe = media.endsWith('.mp4') ? 'video' : 'gif'
-								ev.sendMessage(from, `Gagal, video nya kebesaran, dd gakuat`, MessageType.text)
-							})
-							.on('end', function () {
-								console.log('Finish')
-								buff = fs.readFileSync(ran)
-								ev.sendMessage(from, buff, MessageType.sticker, {quoted: msg})
-								fs.unlinkSync(media)
-								fs.unlinkSync(ran)
-							})
-							.addOutputOptions([`-vcodec`,`libwebp`,`-vf`,`scale='min(320,iw)':min'(320,ih)':force_original_aspect_ratio=decrease,fps=15, pad=320:320:-1:-1:color=white@0.0, split [a][b]; [a] palettegen=reserve_transparent=on:transparency_color=ffffff [p]; [b][p] paletteuse`])
-							.toFormat('webp')
-							.save(ran)
+		const encmedia = isQImg ? JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo : msg
+		const media = await ev.downloadAndSaveMediaMessage(encmedia)
+		ran = getRandom('.webp')
+	        await ffmpeg(`./${media}`)
+		.input(media)
+		.on('start', function (cmd) {
+		console.log(`Started : ${cmd}`)
+		})
+	        .on('error', function (err) {
+		console.log(`Error : ${err}`)
+	        fs.unlinkSync(media)
+		    wa.reply(from, 'error', msg)
+		    })
+	            .on('end', function () {
+		    console.log('Finish')
+		    ev.sendMessage(from, fs.readFileSync(ran), MessageType.sticker, {quoted: msg})
+		    fs.unlinkSync(media)
+		    fs.unlinkSync(ran)
+		})
+		.addOutputOptions([`-vcodec`,`libwebp`,`-vf`,`scale='min(320,iw)':min'(320,ih)':force_original_aspect_ratio=decrease,fps=15, pad=320:320:-1:-1:color=white@0.0, split [a][b]; [a] palettegen=reserve_transparent=on:transparency_color=ffffff [p]; [b][p] paletteuse`])
+		    .toFormat('webp')
+		    .save(ran)
+		 } else if ((isMedia && msg.message.videoMessage || isQVid && msg.message.extendedTextMessage.contextInfo.quotedMessage.videoMessage) && args.length == 0) {
+			const encmedia = isQVid ? JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo : msg
+			const media = await ev.downloadAndSaveMediaMessage(encmedia)
+			if (Buffer.byteLength(media) >= 6186598.4) return wa.reply(from, `sizenya terlalu gede sayang, dd gakuat :(`, msg)
+			ran = getRandom('.webp')
+			await ffmpeg(`./${media}`)
+			.inputFormat(media.split('.')[1])
+			.on('start', function (cmd) {
+			console.log(`Started : ${cmd}`)
+			})
+			.on('error', function (err) {
+			    console.log(`Error : ${err}`)
+				fs.unlinkSync(media)
+				tipe = media.endsWith('.mp4') ? 'video' : 'gif'
+			        ev.sendMessage(from, `Gagal, video nya kebesaran, dd gakuat`, MessageType.text)
+			})
+			.on('end', function () {
+			console.log('Finish')
+			buff = fs.readFileSync(ran)
+                        ev.sendMessage(from, buff, MessageType.sticker, {quoted: msg})
+	                fs.unlinkSync(media)
+        fs.unlinkSync(ran)
+	})
+        .addOutputOptions([`-vcodec`,`libwebp`,`-vf`,`scale='min(320,iw)':min'(320,ih)':force_original_aspect_ratio=decrease,fps=15, pad=320:320:-1:-1:color=white@0.0, split [a][b]; [a] palettegen=reserve_transparent=on:transparency_color=ffffff [p]; [b][p] paletteuse`])
+        .toFormat('webp')
+	.save(ran)
 	}
 	break
         }
     } catch(e) {
-        console.log(`Error: ${e}`)
+      e = String(e)
+      if (!e.includes("this.isZero")) {
+      console.log(`Error: ${e}`)
+      }
     }
 })
