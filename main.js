@@ -240,11 +240,11 @@ Available Feature
               wa.reply(from, 'succes', msg)
                 break
             case 'stiker':
-		     	  case 's':
-			     	case 'sticker':
-			    	case 'stickergif':
-			    	case 'stikergif':
-		   			if ((isMedia && !msg.message.videoMessage || isQImg) && args.length == 0) {
+            case 's':
+            case 'sticker':
+	    case 'stickergif':
+            case 'stikergif':
+	      if ((isMedia && !msg.message.videoMessage || isQImg) && args.length == 0) {
 						const encmedia = isQImg ? JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo : msg
 						const media = await ev.downloadAndSaveMediaMessage(encmedia)
 						ran = getRandom('.webp')
@@ -293,8 +293,8 @@ Available Feature
 							.addOutputOptions([`-vcodec`,`libwebp`,`-vf`,`scale='min(320,iw)':min'(320,ih)':force_original_aspect_ratio=decrease,fps=15, pad=320:320:-1:-1:color=white@0.0, split [a][b]; [a] palettegen=reserve_transparent=on:transparency_color=ffffff [p]; [b][p] paletteuse`])
 							.toFormat('webp')
 							.save(ran)
-						}
-						break
+	}
+	break
         }
     } catch(e) {
         console.log(`Error: ${e}`)
