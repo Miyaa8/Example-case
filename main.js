@@ -77,7 +77,94 @@ Available Feature
 8. *${prefix}ppcouple*
 9. *${prefix}randomaesthetic*
 10. *${prefix}asupan*
-11. *${prefix}igdl*`, msg)
+11. *${prefix}igdl*
+12. *${prefix}ytmp4*
+13. *${prefix}ytmp3*
+14. *${prefix}wikipedia*
+15. *${prefix}kusonime*
+16. *${prefix}dewabatch*
+17. *${prefix}tiktokstalk*
+18. *${prefix}githubstalk*
+19. *${prefix}igstalk*`, msg)
+                break
+            case 'igstalk':
+              try {
+              igg = await axios.get(`https://lindow-api.herokuapp.com/api/igstalk?username=${body.slice(9)}&apikey=${apikey}`)
+              var { id, biography, subscribersCount, subscribtions, fullName, highlightCount, isPrivate, isVerified, profilePicHD, username, postsCount } = igg.data
+              capt = `Instagram Stalk\n\nUsername : ${username}\nFull Name : ${fullName}\nBio : ${biography}\nFollowers : ${subscribersCount}\nFollowing : ${subscribtions}\n\nOther Info\n\nPrivate Account : ${isPrivate}\nVerified : ${isVerified}\nHighlight Count : ${highlightCount}\nPost Count : ${postsCount}`
+              foto = await getBuffer(profilePicHD)
+              ev.sendMessage(from, foto, MessageType.image, {caption: capt})
+              } catch (e) {
+                console.log(e)
+                wa.reply(from, `user tidak ditemukan\n\nExample : ${prefix}igstalk Mccnlight`, msg)
+              }
+              break
+            case 'githubstalk':
+              git = await axios.get(`https://lindow-api.herokuapp.com/api/githubstalk?username=${body.slice(13)}&apikey=${apikey}`)
+              var { idUser, username, nodeId, avatarUrl, githubUrl, blog, company, email, bio, publicRepos, followers, following, createdAt } = git.data.result
+              capt = `Github Stalk\n\nUsername : ${username}\nName : ${git.data.result.name}\nId : ${idUser}\nGithub Url : ${githubUrl}\nBio : ${bio}\n\nOther info\n\nCompany : ${company}\nEmail : ${email}\nNode id : ${nodeId}\nBlog : ${blog}\nPublic repo : ${publicRepos}\nFollower : ${followers}\nFollowing : ${following}\n\nCreated At : ${createdAt}`
+              foto = await getBuffer(avatarUrl)
+              ev.sendMessage(from, foto, MessageType.image, {caption: capt})
+              break
+            case 'tiktokstalk':
+              res = await axios.get(`https://lindow-api.herokuapp.com/api/tiktod/stalk/?username=${body.slice(13)}&apikey=${apikey}`)
+              var { id, uniqueId, nickname, avatarLarger, createTime, verified, privateAccount } = res.data.result.user
+              var { followerCount, followingCount, heartCount, videoCount } = res.data.result.stats
+              console.log(res)
+              capt = `Tiktok Stalk\n\nNickname : ${nickname}\nUsername : ${uniqueId}\nId : ${id}\n\nCreate at : ${createTime}\nVerified : ${verified}\nPrivate accout : ${privateAccount}\n\nStats\n\nFollower count : ${followerCount}\nFollowing count : ${followingCount}\nLikes : ${heartCount}\nVideo Count : ${videoCount}`
+              foto = await getBuffer(avatarLarger)
+              ev.sendMessage(from, foto, MessageType.image, {caption: capt})
+              break
+            case 'kusonime':
+                try {
+                q = body.slice(10)
+                kus = await axios.get(`https://lindow-api.herokuapp.com/api/anime/kusonime?search=${q}&apikey=${apikey}`)
+                var { info, link, sinopsis, thumb, title } = kus.data.result
+                buf = await getBuffer(thumb)
+                cap = `Title : ${title}\n\n${info}\n\nLink download : ${link}\n\nSinopsis : ${sinopsis}`
+                ev.sendMessage(from, buf, MessageType.image, {caption: cap})
+                } catch (e) {
+                console.log(e)
+                wa.reply(from, `Anime ${q} tidak ditemukan, coba cari title lain`, msg)
+                }
+                break
+            case 'dewabatch':
+                try {
+                q = body.slice(11)
+                dew = await axios.get(`https://lindow-python-api.herokuapp.com/api/dewabatch?q=${q}`)
+                var { result, sinopsis, thumb } = dew.data
+                buffer = await getBuffer(thumb)
+                cap = `${result}\n\n${sinopsis}`
+                ev.sendMessage(from, buffer, MessageType.image, {caption: cap})
+                } catch (e) {
+                console.log(e)
+                wa.reply(from, `Anime ${q} tidak dapat ditemukan`, msg)
+                }
+                break
+            case 'wikipedia':
+              q = body.slice(11)
+              wiki = await axios.get(`https://lindow-api.herokuapp.com/api/wikipedia?search=${q}&apikey=${apikey}`)
+              wa.reply(from, `Hasil pencarin dari ${q}\n\n${wiki.data.result}\nJika undefined berarti query tidak ditemukan`, msg)
+                break
+            case 'ytmp3':
+                yt = await axios.get(`https://lindow-python-api.herokuapp.com/api/yta?url=${body.slice(7)}`)
+                var { ext, filesize, result, thumb, title } = yt.data
+                foto = await getBuffer(thumb)
+                if (Number(filesize.split(' MB')[0]) >= 30.00) return ev.sendMessage(from, foto, MessageType.image, {caption: `Title : ${title}\n\nExt : ${ext}\n\nFilesize : ${filesize}\n\nLink : ${result}\n\nUkuran audio diatas 30 MB, Silakan gunakan link download manual`})
+                cap = `Ytmp3 downloader\n\nTitle : ${title}\n\nExt : ${ext}\n\nFilesize : ${filesize}`
+                ev.sendMessage(from, foto, MessageType.image, {caption: cap})
+                au = await getBuffer(result)
+                ev.sendMessage(from, au, MessageType.audio, {mimetype: 'audio/mp4', filename: `${title}.mp3`, quoted: msg})
+                break
+            case 'ytmp4':
+                yt = await axios.get(`https://lindow-python-api.herokuapp.com/api/ytv?url=${body.slice(7)}`)
+                var { ext, filesize, resolution, result, thumb, title } = yt.data
+                foto = await getBuffer(thumb)
+                if (Number(filesize.split(' MB')[0]) >= 30.00) return ev.sendMessage(from, foto, MessageType.image, {caption: `Title : ${title}\n\nExt : ${ext}\n\nFilesize : ${filesize}\n\nResolution: ${resolution}\n\nLink : ${result}\n\nUkuran video diatas 30 MB, Silakan gunakan link download manual`})
+                cap = `Ytmp4 downloader\n\nTitle : ${title}\n\nExt : ${ext}\n\nFilesize : ${filesize}\n\nResolution: ${resolution}`
+                ev.sendMessage(from, foto, MessageType.image, {caption: cap})
+                au = await getBuffer(result)
+                ev.sendMessage(from, au, MessageType.video, {mimetype: 'video/mp4', filename: `${title}.mp4`, quoted: msg, caption: `${title}`})
                 break
             case 'igdl':
                 var ini_url = body.slice(6)
