@@ -42,7 +42,7 @@ ev.on('chat-update', async (msg) => {
         let { body } = msg
         let { name, vname, notify, verify , jid } = sender
         pushname = name || vname || notify || verify
-        body = (type === 'conversation' && body.startsWith(prefix)) ? body : (((type === 'imageMessage' || type === 'videoMessage') && body) && body.startsWith(prefix)) ? body : ((type === 'ephemeralMessage') && body.startsWith(prefix)) ? body : ((type === 'extendedTextMessage') && body.startsWith(prefix)) ? body : ''
+        body = (type === 'conversation' && body.startsWith(prefix)) ? body : (((type === 'imageMessage' || type === 'videoMessage') && body) && body.startsWith(prefix)) ? body : ((type === 'ephemeralMessage') && body.startsWith(prefix)) ? body : ((type === 'extendedTextMessage') && body.startsWith(prefix)) ? body : '' //Support ephemeralMessage or pesan sementara
         const command = body.slice(1).trim().split(/ +/).shift().toLowerCase()
         const arg = body.substring(body.indexOf(' ') + 1)
         const args = body.trim().split(/ +/).slice(1)
