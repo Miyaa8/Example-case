@@ -4,7 +4,7 @@
  * Belum selesai
  */
 
-onstt con = require('./core/connect')
+const con = require('./core/connect')
 const wa = require('./core/helper')
 const {
     MessageType
