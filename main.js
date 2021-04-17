@@ -51,8 +51,9 @@ ev.on('chat-update', async (msg) => {
         const groupMetadata = isGroup ? await ev.groupMetadata(from) : ''
         const groupSubject = isGroup ? groupMetadata.subject : ''
         const groupMembers = isGroup ? groupMetadata.participants : ''
-        const groupAdmins = isGroup ? await wa.getGroupAdmins(groupMembers) : []
-        const isAdmin = groupAdmins.includes(sender) || false
+        const groupAdmins = isGroup ? await wa.getGroupAdmins(groupMembers) : ''
+        var senderr = isGroup ? msg.participant : msg.key.remoteJid
+        const isAdmin = groupAdmins.includes(senderr) || false
         const content = JSON.stringify(msg.quoted)
         const isMedia = (type === 'imageMessage' || type === 'videoMessage')
         const isQStick = type === 'extendedTextMessage' && content.includes('stickerMessage')
@@ -256,6 +257,7 @@ Available Feature
               ev.sendMessage(from, test, MessageType.image)
               break
             case 'revoke':
+              if (!isAdmin) return wa.reply(from, 'this command only for admin', msg)
               if (!isGroup) return wa.reply(from, 'This command only for group')
                 ev.revokeInvite(from)
               wa.reply(from, 'succes', msg)
