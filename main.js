@@ -42,7 +42,7 @@ ev.on('chat-update', async (msg) => {
         let { body } = msg
         let { name, vname, notify, verify , jid } = sender
         pushname = name || vname || notify || verify
-        body = (type === 'conversation' && body.startsWith(prefix)) ? body : (((type === 'imageMessage' || type === 'videoMessage') && body) && body.startsWith(prefix)) ? body : ((type === 'ephemeralMessage') && body.startsWith(prefix)) ? body : ((type === 'extendedTextMessage') && body.startsWith(prefix)) ? body : '' //Support ephemeralMessage or pesan sementara
+        body = (type === 'conversation' && body.startsWith(prefix)) ? body : (((type === 'imageMessage' || type === 'videoMessage') && body) && body.startsWith(prefix)) ? body : ((type === 'ephemeralMessage') && body.startsWith(prefix)) ? body : ((type === 'extendedTextMessage') && body.startsWith(prefix)) ? body : ''
         const command = body.slice(1).trim().split(/ +/).shift().toLowerCase()
         const arg = body.substring(body.indexOf(' ') + 1)
         const args = body.trim().split(/ +/).slice(1)
@@ -85,8 +85,23 @@ Available Feature
 16. *${prefix}dewabatch*
 17. *${prefix}tiktokstalk*
 18. *${prefix}githubstalk*
-19. *${prefix}igstalk*`, msg)
+19. *${prefix}igstalk*
+20. *${prefix}setname*
+21. *${prefix}readmore*
+22. *${prefix}googleimg*`, msg)
                 break
+            case 'readmore':
+              const more = String.fromCharCode(8206)
+              const readmore = more.repeat(4001)
+              var kls = body.slice(10)
+				    	var has = kls.split("|")[0];
+					    var kas = kls.split("|")[1];
+              wa.reply(from, `${has}`+readmore+`${kas}`, msg)
+              break
+            case 'setname':
+              ev.updateProfileName(args.join(" "))
+              wa.reply(from, `Success`, msg)
+              break
             case 'igstalk':
               try {
               igg = await axios.get(`https://lindow-api.herokuapp.com/api/igstalk?username=${body.slice(9)}&apikey=${apikey}`)
@@ -233,73 +248,79 @@ Available Feature
                 wa.reply(from, 'Error! silakan gunakan query lain', msg)
               }
               break
+            case 'googleimg':
+              g = await axios.get(`https://lindow-api.herokuapp.com/api/googleimg?q=${body.slice(11)}&apikey=${apikey}`)
+              var string = JSON.parse(JSON.stringify(g.data.result))
+              var random = string[Math.floor(Math.random() * string.length)]
+              test = await getBuffer(`${random}`)
+              ev.sendMessage(from, test, MessageType.image)
+              break
             case 'revoke':
               if (!isGroup) return wa.reply(from, 'This command only for group')
-              if (!isAdmin) return wa.reply(from, 'This feature only for admin', msg)
                 ev.revokeInvite(from)
               wa.reply(from, 'succes', msg)
                 break
             case 'stiker':
-            case 's':
-            case 'sticker':
-	    case 'stickergif':
-            case 'stikergif':
-	      if ((isMedia && !msg.message.videoMessage || isQImg) && args.length == 0) {
-		const encmedia = isQImg ? JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo : msg
-		const media = await ev.downloadAndSaveMediaMessage(encmedia)
-		ran = getRandom('.webp')
-	        await ffmpeg(`./${media}`)
-		.input(media)
-		.on('start', function (cmd) {
-		console.log(`Started : ${cmd}`)
-		})
-	        .on('error', function (err) {
-		console.log(`Error : ${err}`)
-	        fs.unlinkSync(media)
-		    wa.reply(from, 'error', msg)
-		    })
-	            .on('end', function () {
-		    console.log('Finish')
-		    ev.sendMessage(from, fs.readFileSync(ran), MessageType.sticker, {quoted: msg})
-		    fs.unlinkSync(media)
-		    fs.unlinkSync(ran)
-		})
-		.addOutputOptions([`-vcodec`,`libwebp`,`-vf`,`scale='min(320,iw)':min'(320,ih)':force_original_aspect_ratio=decrease,fps=15, pad=320:320:-1:-1:color=white@0.0, split [a][b]; [a] palettegen=reserve_transparent=on:transparency_color=ffffff [p]; [b][p] paletteuse`])
-		    .toFormat('webp')
-		    .save(ran)
-		 } else if ((isMedia && msg.message.videoMessage || isQVid && msg.message.extendedTextMessage.contextInfo.quotedMessage.videoMessage) && args.length == 0) {
-			const encmedia = isQVid ? JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo : msg
-			const media = await ev.downloadAndSaveMediaMessage(encmedia)
-			if (Buffer.byteLength(media) >= 6186598.4) return wa.reply(from, `sizenya terlalu gede sayang, dd gakuat :(`, msg)
-			ran = getRandom('.webp')
-			await ffmpeg(`./${media}`)
-			.inputFormat(media.split('.')[1])
-			.on('start', function (cmd) {
-			console.log(`Started : ${cmd}`)
-			})
-			.on('error', function (err) {
-			    console.log(`Error : ${err}`)
-				fs.unlinkSync(media)
-				tipe = media.endsWith('.mp4') ? 'video' : 'gif'
-			        ev.sendMessage(from, `Gagal, video nya kebesaran, dd gakuat`, MessageType.text)
-			})
-			.on('end', function () {
-			console.log('Finish')
-			buff = fs.readFileSync(ran)
-                        ev.sendMessage(from, buff, MessageType.sticker, {quoted: msg})
-	                fs.unlinkSync(media)
-        fs.unlinkSync(ran)
-	})
-        .addOutputOptions([`-vcodec`,`libwebp`,`-vf`,`scale='min(320,iw)':min'(320,ih)':force_original_aspect_ratio=decrease,fps=15, pad=320:320:-1:-1:color=white@0.0, split [a][b]; [a] palettegen=reserve_transparent=on:transparency_color=ffffff [p]; [b][p] paletteuse`])
-        .toFormat('webp')
-	.save(ran)
-	}
-	break
+		     	  case 's':
+			     	case 'sticker':
+			    	case 'stickergif':
+			    	case 'stikergif':
+		   			if ((isMedia && !msg.message.videoMessage || isQImg) && args.length == 0) {
+						const encmedia = isQImg ? JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo : msg
+						const media = await ev.downloadAndSaveMediaMessage(encmedia)
+						ran = getRandom('.webp')
+						await ffmpeg(`./${media}`)
+							.input(media)
+							.on('start', function (cmd) {
+								console.log(`Started : ${cmd}`)
+							})
+							.on('error', function (err) {
+								console.log(`Error : ${err}`)
+								fs.unlinkSync(media)
+								wa.reply(from, 'error', msg)
+							})
+							.on('end', function () {
+								console.log('Finish')
+								ev.sendMessage(from, fs.readFileSync(ran), MessageType.sticker, {quoted: msg})
+								fs.unlinkSync(media)
+								fs.unlinkSync(ran)
+							})
+							.addOutputOptions([`-vcodec`,`libwebp`,`-vf`,`scale='min(320,iw)':min'(320,ih)':force_original_aspect_ratio=decrease,fps=15, pad=320:320:-1:-1:color=white@0.0, split [a][b]; [a] palettegen=reserve_transparent=on:transparency_color=ffffff [p]; [b][p] paletteuse`])
+							.toFormat('webp')
+							.save(ran)
+						} else if ((isMedia && msg.message.videoMessage || isQVid && msg.message.extendedTextMessage.contextInfo.quotedMessage.videoMessage) && args.length == 0) {
+						const encmedia = isQVid ? JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo : msg
+						const media = await ev.downloadAndSaveMediaMessage(encmedia)
+						if (Buffer.byteLength(media) >= 6186598.4) return wa.reply(from, `sizenya terlalu gede sayang, dd gakuat :(`, msg)
+						ran = getRandom('.webp')
+						await ffmpeg(`./${media}`)
+							.inputFormat(media.split('.')[1])
+							.on('start', function (cmd) {
+								console.log(`Started : ${cmd}`)
+							})
+							.on('error', function (err) {
+								console.log(`Error : ${err}`)
+								fs.unlinkSync(media)
+								tipe = media.endsWith('.mp4') ? 'video' : 'gif'
+								ev.sendMessage(from, `Gagal, video nya kebesaran, dd gakuat`, MessageType.text)
+							})
+							.on('end', function () {
+								console.log('Finish')
+								buff = fs.readFileSync(ran)
+								ev.sendMessage(from, buff, MessageType.sticker, {quoted: msg})
+								fs.unlinkSync(media)
+								fs.unlinkSync(ran)
+							})
+							.addOutputOptions([`-vcodec`,`libwebp`,`-vf`,`scale='min(320,iw)':min'(320,ih)':force_original_aspect_ratio=decrease,fps=15, pad=320:320:-1:-1:color=white@0.0, split [a][b]; [a] palettegen=reserve_transparent=on:transparency_color=ffffff [p]; [b][p] paletteuse`])
+							.toFormat('webp')
+							.save(ran)
+						}
+						break
         }
     } catch(e) {
       e = String(e)
       if (!e.includes("this.isZero")) {
-      console.log(`Error: ${e}`)
-      }
+        console.log(`Error: ${e}`)
     }
+  }
 })
