@@ -19,13 +19,14 @@ const axios = require('axios')
 const moment = require('moment-timezone')
 const getBuffer = wa.getBuffer
 const ev = con.Whatsapp
+const { exec, spawn } = require("child_process")
 
 const prefix = '!'
 const apikey = 'LindowApi' // Get in lindow-api.herokuapp.com
 
 // Database
-const _limit = JSON.parse(fs.readFileSync('./core/limit.json'))
-firstlimit = 30
+let _limit = JSON.parse(fs.readFileSync('./core/limit.json'))
+firstlimit = 3
 
 con.connect()
 
@@ -60,6 +61,10 @@ ev.on('chat-update', async (msg) => {
         const senderr = isGroup ? msg.participant : msg.key.remoteJid
         const isAdmin = groupAdmins.includes(senderr) || false
         const content = JSON.stringify(msg.quoted)
+        const botNumber = ev.user.jid
+        const ownerNumber = ["6289513946766@s.whatsapp.net"]
+        const isOwner = ownerNumber.includes(senderr)
+        
         const isMedia = (type === 'imageMessage' || type === 'videoMessage')
         const isQStick = type === 'extendedTextMessage' && content.includes('stickerMessage')
         const isQImg = type === 'extendedTextMessage' && content.includes('imageMessage')
@@ -68,9 +73,10 @@ ev.on('chat-update', async (msg) => {
         printLog(isCmd, jid, groupSubject, isGroup)
         
         const limitAdd = (senderr) => {
+        if (isOwner) {return false;}
         let position = false
         Object.keys(_limit).forEach((i) => {
-        if (_limit[i].id == senderr) {
+        if (_limit[i].id == senderr.jid) {
             position = i
           }
         })
@@ -81,9 +87,10 @@ ev.on('chat-update', async (msg) => {
         }
         
         const checkLimit = (senderr) => {
+          if (isOwner) return wa.reply(from, 'Owner tidak pakai limit', msg)
           let found = false
           for (let lmt of _limit) {
-          if (lmt.id === senderr) {
+          if (lmt.id === senderr.jid) {
           let limitCounts = firstlimit - lmt.limit
           if (limitCounts <= 0) return ev.sendMessage(from,`Limit mu sudah habis, gunakan bot lagi besok`, MessageType.text, { quoted: msg})
           ev.sendMessage(from, `Sisa limit anda : *${limitCounts}*`, MessageType.text, { quoted : msg})
@@ -91,17 +98,18 @@ ev.on('chat-update', async (msg) => {
             }
           }
           if (found === false) {
-          let obj = { id: sender, limit: 0 }
+          let obj = { id: senderr.jid, limit: 0 }
           _limit.push(obj)
           fs.writeFileSync('./core/limit.json', JSON.stringify(_limit))
           ev.sendMessage(from, `Sisa limit anda : *${limitCounts}*`, MessageType.text, { quoted : msg})
           }
 				}
 				
-				const isLimit = (senderr) =>{ 
+				const isLimit = (senderr) =>{
+		      if (isOwner) {return false;}
 		      let position = false
             for (let i of _limit) {
-            if (i.id === senderr) {
+            if (i.id === senderr.jid) {
               	let limits = i.limit
             if (limits >= firstlimit ) {
               position = true
@@ -115,7 +123,7 @@ ev.on('chat-update', async (msg) => {
             }
           }
           if (position === false) {
-           	const obj = { id: senderr, limit: 0 }
+           	const obj = {id: senderr.jid, limit: 0}
             _limit.push(obj)
             fs.writeFileSync('./core/limit.json',JSON.stringify(_limit))
           return false
@@ -149,7 +157,15 @@ Available Feature
 19. *${prefix}igstalk*
 20. *${prefix}setname*
 21. *${prefix}readmore*
-22. *${prefix}googleimg*`, msg)
+22. *${prefix}googleimg*
+23. *${prefix}checklimit*
+23. *${prefix}resetlimit*`, msg)
+                break
+            case 'resetlimit':
+              if (!isOwner) return wa.reply(from, 'only for owner', msg)
+              var obj = []
+              fs.writeFileSync('./core/limit.json', JSON.stringify(obj))
+              wa.reply(from, 'done, silakan run ulang bot', msg)
                 break
             case 'readmore':
               if (isLimit(sender)) return
@@ -165,9 +181,7 @@ Available Feature
               checkLimit(sender)
               break
             case 'setname':
-              if (isLimit(sender)) return
-              await limitAdd(sender)
-              if (!isAdmin) return wa.reply('only for admin')
+              if (!isOwner) return wa.reply(from, 'only for owner', msg)
               ev.updateProfileName(args.join(" "))
               wa.reply(from, `Success`, msg)
               break
