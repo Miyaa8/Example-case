@@ -105,9 +105,9 @@ ev.on('chat-update', async (msg) => {
           }
 				}
 				
-				const isLimit = (senderr) =>{
-		      if (isOwner) {return false;}
-		      let position = false
+	const isLimit = (senderr) => {
+          if (isOwner) {return false;}
+          let position = false
             for (let i of _limit) {
             if (i.id === senderr.jid) {
               	let limits = i.limit
@@ -383,12 +383,12 @@ Available Feature
               wa.reply(from, 'succes', msg)
                 break
             case 'stiker':
-		     	  case 's':
-			     	case 'sticker':
-			    	case 'stickergif':
-			    	case 'stikergif':
+            case 's':
+            case 'sticker':
+	    case 'stickergif':
+	    case 'stikergif':
 			    	if (isLimit(sender)) return
-              await limitAdd(sender)
+                                await limitAdd(sender)
 		   			if ((isMedia && !msg.message.videoMessage || isQImg) && args.length == 0) {
 						const encmedia = isQImg ? JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo : msg
 						const media = await ev.downloadAndSaveMediaMessage(encmedia)
