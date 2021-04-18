@@ -26,7 +26,7 @@ const apikey = 'LindowApi' // Get in lindow-api.herokuapp.com
 
 // Database
 let _limit = JSON.parse(fs.readFileSync('./core/limit.json'))
-firstlimit = 3
+firstlimit = 30
 
 con.connect()
 
@@ -439,7 +439,7 @@ Available Feature
 				.toFormat('webp')
 				.save(ran)
 			  }
-			break
+      break
       }
     } catch(e) {
       e = String(e)
