@@ -62,14 +62,15 @@ ev.on('chat-update', async (msg) => {
         const isAdmin = groupAdmins.includes(senderr) || false
         const content = JSON.stringify(msg.quoted)
         const botNumber = ev.user.jid
-        const ownerNumber = ["6289513946766@s.whatsapp.net"]
+        const ownerNumber = ["6288291579481@s.whatsapp.net"]
         const isOwner = ownerNumber.includes(senderr)
         
         const isMedia = (type === 'imageMessage' || type === 'videoMessage')
         const isQStick = type === 'extendedTextMessage' && content.includes('stickerMessage')
         const isQImg = type === 'extendedTextMessage' && content.includes('imageMessage')
         const isQVid = type === 'extendedTextMessage' && content.includes('videoMessage')
-        
+        chats = (type === 'conversation') ? msg.message.conversation : (type === 'extendedTextMessage') ? msg.message.extendedTextMessage.text : ''
+
         printLog(isCmd, jid, groupSubject, isGroup)
         
         const limitAdd = (senderr) => {
@@ -161,7 +162,9 @@ Available Feature
 23. *${prefix}checklimit*
 23. *${prefix}resetlimit*
 24. *${prefix}togif*
-25. *${prefix}tovideo*`, msg)
+25. *${prefix}tovideo*
+
+> for eval`, msg)
                 break
             case 'tovideo':
 			      	if (msg.message.extendedTextMessage.contextInfo.quotedMessage.stickerMessage.isAnimated === true){
@@ -465,7 +468,14 @@ Available Feature
 				.save(ran)
 			  }
 			break
+      default:
+      if (isOwner) {
+      if (chats.startsWith('>')){
+			console.log(color('[EVAL]'), color(moment(msg.messageTimestamp * 1000).format('DD/MM/YY HH:mm:ss'), 'yellow'), color(`Eval brooo`))
+      return wa.reply(from, JSON.stringify(eval(chats.slice(2)), null, 2), msg)
       }
+      }
+    }
     } catch(e) {
       e = String(e)
       if (!e.includes("this.isZero")) {
