@@ -193,6 +193,7 @@ Available Feature
 > for eval`, msg)
                 break
             case 'afk':
+                if (isLimit(sender)) return
                 alasan = args.join(" ")
                 afk[senderr.split('@')[0]] = alasan.toLowerCase()
                 fs.writeFileSync("./core/afk.json", JSON.stringify(afk))
@@ -201,8 +202,10 @@ Available Feature
                 ini_txt += "Dengan alasan " + alasan
                 }
                 wa.reply(from, ini_txt, msg)
+                await limitAdd(sender)
                 break
             case 'tovideo':
+                if (isLimit(sender)) return
                 if (msg.message.extendedTextMessage.contextInfo.quotedMessage.stickerMessage.isAnimated === true){
 		const encmedia = JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo
 	        const media = await ev.downloadAndSaveMediaMessage(encmedia)
@@ -211,8 +214,10 @@ Available Feature
 		    await wa.sendMediaURL(from, test.data.result, 'Nih')
 		    fs.unlinkSync(media)
 		}
+                await limitAdd(sender)
 		break
             case 'togif':
+                if (isLimit(sender)) return
 	        if (msg.message.extendedTextMessage.contextInfo.quotedMessage.stickerMessage.isAnimated === true){
 		const encmedia = JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo
 		const media = await ev.downloadAndSaveMediaMessage(encmedia)
@@ -224,6 +229,7 @@ Available Feature
                 } else {
 		wa.reply(from, `Harus sticker gif`, msg)
 	        }
+                await limitAdd(sender)
 	        break
             case 'resetlimit':
                 if (!isOwner) return wa.reply(from, 'only for owner', msg)
