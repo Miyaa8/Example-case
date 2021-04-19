@@ -5,8 +5,82 @@ const {
 } = require('@adiwajshing/baileys')
 const fs = require('fs')
 const axios = require('axios')
+const FormData = require('form-data')
+const fetch = require('node-fetch');
+const request = require('request');
 
 const wa = con.Whatsapp
+
+exports.sendMediaURL = async(to, url, text="", msg, mids=[]) =>{
+	if(mids.length > 0){
+		text = normalizeMention(to, text, mids)
+	}
+	const fn = Date.now() / 10000;
+	const filename = fn.toString()
+	let mime = ""
+	var download = function (uri, filename, callback) {
+		request.head(uri, function (err, res, body) {
+			mime = res.headers['content-type']
+			request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
+		});
+	};
+	download(url, filename, async function () {
+		console.log('done');
+		let media = fs.readFileSync(filename)
+		let type = mime.split("/")[0]+"Message"
+		if(mime === "image/gif"){
+			type = MessageType.video
+			mime = Mimetype.gif
+		}
+		if(mime.split("/")[0] === "audio"){
+			mime = Mimetype.mp4Audio
+		}
+		wa.sendMessage(to, media, type, { quoted: msg, mimetype: mime, caption: text,contextInfo: {"mentionedJid": mids}})
+		
+		fs.unlinkSync(filename)
+	});
+}
+
+exports.sendGif = (from, gif) => {
+	wa.sendMessage(from, gif, MessageType.video, {mimetype: "video/gif"})
+}
+
+function uptonaufal (filename, name) {
+    var image = fs.createReadStream(filename)
+    var form = new FormData()
+    form.append('image', image, name)
+     
+    const upload = fetch('https://storage.naufalhoster.xyz', {
+        method: 'POST',
+        body: form
+    }).then((response) => response.json())
+        .then((result) => {
+            return result
+        })
+        .catch(e => {
+            return e
+        })
+    return upload
+}
+
+exports.getGroup = async function(totalchat){
+	let grup = []
+	let a = []
+	let b = []
+	for (c of totalchat){
+		a.push(c.jid)
+	}
+	for (d of a){
+		if (d && d.includes('g.us')){
+			b.push(d)
+		}
+	}
+	for (e of b){
+		let ingfo = await wa.groupMetadata(e)
+		grup.push(ingfo)
+	}
+	return grup
+}
 
 exports.getBuffer = async (url, options) => {
 	try {
@@ -188,3 +262,5 @@ exports.sticker = function(jid, data, options={}) {
         wa.sendMessage(jid, data, MessageType.sticker, options)
     }
 }
+
+exports.uptonaufal = uptonaufal
