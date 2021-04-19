@@ -14,6 +14,9 @@
     "chalk": "*",
     "fluent-ffmpeg": "*",
     "axios": "*",
+    "request": "*",
+    "node-fetch": "*",
+    "form-data": "*",
     "fs": "*",
     "moment-timezone": "*",
     "qrcode-terminal": "*"
