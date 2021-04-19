@@ -74,14 +74,14 @@ ev.on('chat-update', async (msg) => {
         printLog(isCmd, jid, groupSubject, isGroup)
         
         const limitAdd = (senderr) => {
-        if (isOwner) {return false;}
-        let position = false
-        Object.keys(_limit).forEach((i) => {
-        if (_limit[i].id == senderr.jid) {
+          if (isOwner) {return false;}
+          let position = false
+          Object.keys(_limit).forEach((i) => {
+          if (_limit[i].id == senderr.jid) {
             position = i
-          }
-        })
-        if (position !== false) {
+            }
+          })
+          if (position !== false) {
           _limit[position].limit += 1
           fs.writeFileSync('./core/limit.json', JSON.stringify(_limit))
           }
@@ -104,18 +104,18 @@ ev.on('chat-update', async (msg) => {
           fs.writeFileSync('./core/limit.json', JSON.stringify(_limit))
           ev.sendMessage(from, `Sisa limit anda : *${limitCounts}*`, MessageType.text, { quoted : msg})
           }
-				}
+        }
 				
-				const isLimit = (senderr) =>{
-		      if (isOwner) {return false;}
-		      let position = false
+	const isLimit = (senderr) =>{
+            if (isOwner) {return false;}
+            let position = false
             for (let i of _limit) {
             if (i.id === senderr.jid) {
-              	let limits = i.limit
+            let limits = i.limit
             if (limits >= firstlimit ) {
               position = true
               ev.sendMessage(from, `Maaf limit anda hari ini sudah habis`, MessageType.text, {quoted: msg})
-                return true
+              return true
               } else {
               	_limit
                 position = true
@@ -167,51 +167,51 @@ Available Feature
 > for eval`, msg)
                 break
             case 'tovideo':
-			      	if (msg.message.extendedTextMessage.contextInfo.quotedMessage.stickerMessage.isAnimated === true){
-					    const encmedia = JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo
-			    		const media = await ev.downloadAndSaveMediaMessage(encmedia)
-				    	const uploadn = await wa.uptonaufal(media, Date.now() + '.webp')
-					    const test = await axios.get(`http://nzcha-apii.herokuapp.com/webp-to-mp4?url=${uploadn.result.image}`)
-					    await wa.sendMediaURL(from, test.data.result, 'Nih')
-					    fs.unlinkSync(media)
-			      	}
-					    break
+                if (msg.message.extendedTextMessage.contextInfo.quotedMessage.stickerMessage.isAnimated === true){
+		const encmedia = JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo
+	        const media = await ev.downloadAndSaveMediaMessage(encmedia)
+		const uploadn = await wa.uptonaufal(media, Date.now() + '.webp')
+		const test = await axios.get(`http://nzcha-apii.herokuapp.com/webp-to-mp4?url=${uploadn.result.image}`)
+		    await wa.sendMediaURL(from, test.data.result, 'Nih')
+		    fs.unlinkSync(media)
+		}
+		break
             case 'togif':
-			      	if (msg.message.extendedTextMessage.contextInfo.quotedMessage.stickerMessage.isAnimated === true){
-					    const encmedia = JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo
-				    	const media = await ev.downloadAndSaveMediaMessage(encmedia)
-					    const uploadn = await wa.uptonaufal(media, Date.now() + '.webp')
-					    test = await axios.get(`http://nzcha-apii.herokuapp.com/webp-to-mp4?url=${uploadn.result.image}`)
-					    thumb = await getBuffer(test.data.result)
-					    wa.sendGif(from, thumb)
-				    	fs.unlinkSync(media)
-			      	} else {
-			    		wa.reply(from, `Harus sticker gif`, msg)
-			    	}
-			    	break
+	        if (msg.message.extendedTextMessage.contextInfo.quotedMessage.stickerMessage.isAnimated === true){
+		const encmedia = JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo
+		const media = await ev.downloadAndSaveMediaMessage(encmedia)
+	        const uploadn = await wa.uptonaufal(media, Date.now() + '.webp')
+		test = await axios.get(`http://nzcha-apii.herokuapp.com/webp-to-mp4?url=${uploadn.result.image}`)
+	        thumb = await getBuffer(test.data.result)
+	        wa.sendGif(from, thumb)
+		fs.unlinkSync(media)
+                } else {
+		wa.reply(from, `Harus sticker gif`, msg)
+	        }
+	        break
             case 'resetlimit':
-              if (!isOwner) return wa.reply(from, 'only for owner', msg)
-              var obj = []
-              fs.writeFileSync('./core/limit.json', JSON.stringify(obj))
-              wa.reply(from, 'done, silakan run ulang bot', msg)
+                if (!isOwner) return wa.reply(from, 'only for owner', msg)
+                var obj = []
+                fs.writeFileSync('./core/limit.json', JSON.stringify(obj))
+                wa.reply(from, 'done, silakan run ulang bot', msg)
                 break
             case 'readmore':
-              if (isLimit(sender)) return
-              const more = String.fromCharCode(8206)
-              const readmore = more.repeat(4001)
-              var kls = body.slice(10)
-				    	var has = kls.split("|")[0];
-					    var kas = kls.split("|")[1];
-              wa.reply(from, `${has}`+readmore+`${kas}`, msg)
-              await limitAdd(sender)
+                if (isLimit(sender)) return
+                const more = String.fromCharCode(8206)
+                const readmore = more.repeat(4001)
+                var kls = body.slice(10)
+	        var has = kls.split("|")[0];
+		var kas = kls.split("|")[1];
+                wa.reply(from, `${has}`+readmore+`${kas}`, msg)
+                await limitAdd(sender)
               break
             case 'checklimit':
-              checkLimit(sender)
+                checkLimit(sender)
               break
             case 'setname':
-              if (!isOwner) return wa.reply(from, 'only for owner', msg)
-              ev.updateProfileName(args.join(" "))
-              wa.reply(from, `Success`, msg)
+                if (!isOwner) return wa.reply(from, 'only for owner', msg)
+                ev.updateProfileName(args.join(" "))
+                wa.reply(from, `Success`, msg)
               break
             case 'igstalk':
               if (isLimit(sender)) return
@@ -411,67 +411,67 @@ Available Feature
               wa.reply(from, 'succes', msg)
                 break
             case 'stiker':
-		     	  case 's':
-			     	case 'sticker':
-			    	case 'stickergif':
-			    	case 'stikergif':
-			    	if (isLimit(sender)) return
-              await limitAdd(sender)
-		   			if ((isMedia && !msg.message.videoMessage || isQImg) && args.length == 0) {
-						const encmedia = isQImg ? JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo : msg
-						const media = await ev.downloadAndSaveMediaMessage(encmedia)
-						ran = getRandom('.webp')
-						await ffmpeg(`./${media}`)
-							.input(media)
-							.on('start', function (cmd) {
-								console.log(`Started : ${cmd}`)
-							})
-							.on('error', function (err) {
-								console.log(`Error : ${err}`)
-								fs.unlinkSync(media)
-								wa.reply(from, 'error', msg)
-							})
-							.on('end', function () {
-								console.log('Finish')
-								ev.sendMessage(from, fs.readFileSync(ran), MessageType.sticker, {quoted: msg})
-								fs.unlinkSync(media)
-								fs.unlinkSync(ran)
-							})
-							.addOutputOptions([`-vcodec`,`libwebp`,`-vf`,`scale='min(320,iw)':min'(320,ih)':force_original_aspect_ratio=decrease,fps=15, pad=320:320:-1:-1:color=white@0.0, split [a][b]; [a] palettegen=reserve_transparent=on:transparency_color=ffffff [p]; [b][p] paletteuse`])
-							.toFormat('webp')
-							.save(ran)
-						} else if ((isMedia && msg.message.videoMessage || isQVid && msg.message.extendedTextMessage.contextInfo.quotedMessage.videoMessage) && args.length == 0) {
-						const encmedia = isQVid ? JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo : msg
-				const media = await ev.downloadAndSaveMediaMessage(encmedia)
-				if (Buffer.byteLength(media) >= 6186598.4) return wa.reply(from, `sizenya terlalu gede sayang, dd gakuat :(`, msg)
-				ran = getRandom('.webp')
-				await ffmpeg(`./${media}`)
-				.inputFormat(media.split('.')[1])
-				.on('start', function (cmd) {
-				console.log(`Started : ${cmd}`)
-				  })
-				.on('error', function (err) {
-				console.log(`Error : ${err}`)
-				fs.unlinkSync(media)
-				tipe = media.endsWith('.mp4') ? 'video' : 'gif'
-				ev.sendMessage(from, `Gagal, video nya kebesaran, dd gakuat`, MessageType.text)
-					})
-				.on('end', function () {
-				console.log('Finish')
-				buff = fs.readFileSync(ran)
-				ev.sendMessage(from, buff, MessageType.sticker, {quoted: msg})
-				fs.unlinkSync(media)
-				fs.unlinkSync(ran)
-				})
-				.addOutputOptions([`-vcodec`,`libwebp`,`-vf`,`scale='min(320,iw)':min'(320,ih)':force_original_aspect_ratio=decrease,fps=15, pad=320:320:-1:-1:color=white@0.0, split [a][b]; [a] palettegen=reserve_transparent=on:transparency_color=ffffff [p]; [b][p] paletteuse`])
-				.toFormat('webp')
-				.save(ran)
-			  }
-			break
+            case 's':
+            case 'sticker':
+	    case 'stickergif':
+	    case 'stikergif':
+		if (isLimit(sender)) return
+                await limitAdd(sender)
+		if ((isMedia && !msg.message.videoMessage || isQImg) && args.length == 0) {
+		        const encmedia = isQImg ? JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo : msg
+			const media = await ev.downloadAndSaveMediaMessage(encmedia)
+			ran = getRandom('.webp')
+			await ffmpeg(`./${media}`)
+			.input(media)
+			.on('start', function (cmd) {
+			console.log(`Started : ${cmd}`)
+			})
+		        .on('error', function (err) {
+			console.log(`Error : ${err}`)
+			fs.unlinkSync(media)
+			wa.reply(from, 'error', msg)
+			})
+			.on('end', function () {
+			console.log('Finish')
+			ev.sendMessage(from, fs.readFileSync(ran), MessageType.sticker, {quoted: msg})
+			fs.unlinkSync(media)
+		        fs.unlinkSync(ran)
+			})
+	        .addOutputOptions([`-vcodec`,`libwebp`,`-vf`,`scale='min(320,iw)':min'(320,ih)':force_original_aspect_ratio=decrease,fps=15, pad=320:320:-1:-1:color=white@0.0, split [a][b]; [a] palettegen=reserve_transparent=on:transparency_color=ffffff [p]; [b][p] paletteuse`])
+		.toFormat('webp')
+		.save(ran)
+		} else if ((isMedia && msg.message.videoMessage || isQVid && msg.message.extendedTextMessage.contextInfo.quotedMessage.videoMessage) && args.length == 0) {
+	const encmedia = isQVid ? JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo : msg
+	const media = await ev.downloadAndSaveMediaMessage(encmedia)
+	if (Buffer.byteLength(media) >= 6186598.4) return wa.reply(from, `sizenya terlalu gede sayang, dd gakuat :(`, msg)
+	ran = getRandom('.webp')
+	await ffmpeg(`./${media}`)
+	.inputFormat(media.split('.')[1])
+	.on('start', function (cmd) {
+	console.log(`Started : ${cmd}`)
+	})
+	.on('error', function (err) {
+	console.log(`Error : ${err}`)
+	fs.unlinkSync(media)
+	tipe = media.endsWith('.mp4') ? 'video' : 'gif'
+	ev.sendMessage(from, `Gagal, video nya kebesaran, dd gakuat`, MessageType.text)
+	})
+	.on('end', function () {
+		console.log('Finish')
+	        buff = fs.readFileSync(ran)
+	        ev.sendMessage(from, buff, MessageType.sticker, {quoted: msg})
+	        fs.unlinkSync(media)
+		fs.unlinkSync(ran)
+	        })
+	.addOutputOptions([`-vcodec`,`libwebp`,`-vf`,`scale='min(320,iw)':min'(320,ih)':force_original_aspect_ratio=decrease,fps=15, pad=320:320:-1:-1:color=white@0.0, split [a][b]; [a] palettegen=reserve_transparent=on:transparency_color=ffffff [p]; [b][p] paletteuse`])
+	.toFormat('webp')
+	.save(ran)
+        }
+      break
       default:
       if (isOwner) {
       if (chats.startsWith('>')){
-			console.log(color('[EVAL]'), color(moment(msg.messageTimestamp * 1000).format('DD/MM/YY HH:mm:ss'), 'yellow'), color(`Eval brooo`))
+      console.log(color('[EVAL]'), color(moment(msg.messageTimestamp * 1000).format('DD/MM/YY HH:mm:ss'), 'yellow'), color(`Eval brooo`))
       return wa.reply(from, JSON.stringify(eval(chats.slice(2)), null, 2), msg)
       }
       }
