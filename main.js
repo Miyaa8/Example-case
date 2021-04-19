@@ -26,7 +26,7 @@ const apikey = 'LindowApi' // Get in lindow-api.herokuapp.com
 
 // Database
 let _limit = JSON.parse(fs.readFileSync('./core/limit.json'))
-firstlimit = 30
+firstlimit = 25
 
 con.connect()
 
@@ -69,7 +69,7 @@ ev.on('chat-update', async (msg) => {
         const isQStick = type === 'extendedTextMessage' && content.includes('stickerMessage')
         const isQImg = type === 'extendedTextMessage' && content.includes('imageMessage')
         const isQVid = type === 'extendedTextMessage' && content.includes('videoMessage')
-
+        
         printLog(isCmd, jid, groupSubject, isGroup)
         
         const limitAdd = (senderr) => {
@@ -87,7 +87,7 @@ ev.on('chat-update', async (msg) => {
         }
         
         const checkLimit = (senderr) => {
-          if (isOwner) return wa.reply(from, 'Owner tidak pakai limit', msg)
+          if (isOwner) return wa.reply(from, 'Sisa limit anda : *Unlimited*', msg)
           let found = false
           for (let lmt of _limit) {
           if (lmt.id === senderr.jid) {
@@ -105,9 +105,9 @@ ev.on('chat-update', async (msg) => {
           }
 				}
 				
-	const isLimit = (senderr) => {
-          if (isOwner) {return false;}
-          let position = false
+				const isLimit = (senderr) =>{
+		      if (isOwner) {return false;}
+		      let position = false
             for (let i of _limit) {
             if (i.id === senderr.jid) {
               	let limits = i.limit
@@ -159,8 +159,33 @@ Available Feature
 21. *${prefix}readmore*
 22. *${prefix}googleimg*
 23. *${prefix}checklimit*
-23. *${prefix}resetlimit*`, msg)
+23. *${prefix}resetlimit*
+24. *${prefix}togif*
+25. *${prefix}tovideo*`, msg)
                 break
+            case 'tovideo':
+			      	if (msg.message.extendedTextMessage.contextInfo.quotedMessage.stickerMessage.isAnimated === true){
+					    const encmedia = JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo
+			    		const media = await ev.downloadAndSaveMediaMessage(encmedia)
+				    	const uploadn = await wa.uptonaufal(media, Date.now() + '.webp')
+					    const test = await axios.get(`http://nzcha-apii.herokuapp.com/webp-to-mp4?url=${uploadn.result.image}`)
+					    await wa.sendMediaURL(from, test.data.result, 'Nih')
+					    fs.unlinkSync(media)
+			      	}
+					    break
+            case 'togif':
+			      	if (msg.message.extendedTextMessage.contextInfo.quotedMessage.stickerMessage.isAnimated === true){
+					    const encmedia = JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo
+				    	const media = await ev.downloadAndSaveMediaMessage(encmedia)
+					    const uploadn = await wa.uptonaufal(media, Date.now() + '.webp')
+					    test = await axios.get(`http://nzcha-apii.herokuapp.com/webp-to-mp4?url=${uploadn.result.image}`)
+					    thumb = await getBuffer(test.data.result)
+					    wa.sendGif(from, thumb)
+				    	fs.unlinkSync(media)
+			      	} else {
+			    		wa.reply(from, `Harus sticker gif`, msg)
+			    	}
+			    	break
             case 'resetlimit':
               if (!isOwner) return wa.reply(from, 'only for owner', msg)
               var obj = []
@@ -383,12 +408,12 @@ Available Feature
               wa.reply(from, 'succes', msg)
                 break
             case 'stiker':
-            case 's':
-            case 'sticker':
-	    case 'stickergif':
-	    case 'stikergif':
+		     	  case 's':
+			     	case 'sticker':
+			    	case 'stickergif':
+			    	case 'stikergif':
 			    	if (isLimit(sender)) return
-                                await limitAdd(sender)
+              await limitAdd(sender)
 		   			if ((isMedia && !msg.message.videoMessage || isQImg) && args.length == 0) {
 						const encmedia = isQImg ? JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo : msg
 						const media = await ev.downloadAndSaveMediaMessage(encmedia)
@@ -439,7 +464,7 @@ Available Feature
 				.toFormat('webp')
 				.save(ran)
 			  }
-      break
+			break
       }
     } catch(e) {
       e = String(e)
