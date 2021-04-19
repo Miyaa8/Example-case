@@ -28,6 +28,8 @@ const apikey = 'LindowApi' // Get in lindow-api.herokuapp.com
 const afk = JSON.parse(fs.readFileSync('./core/afk.json'))
 let _limit = JSON.parse(fs.readFileSync('./core/limit.json'))
 firstlimit = 25
+fakeimage = fs.readFileSync(`./core/foto1.jpeg`)
+fake = `github.com/Megaa4282`
 
 con.connect()
 
@@ -158,7 +160,7 @@ ev.on('chat-update', async (msg) => {
 
         switch (command) {
             case 'help':
-                wa.reply(from, `Halo ${pushname}
+                textnya = `Halo ${pushname}
                 
 Available Feature
                 
@@ -190,7 +192,8 @@ Available Feature
 25. *${prefix}tovideo*
 26. *${prefix}afk*
 
-> for eval`, msg)
+> for eval`
+            wa.FakeStatusImgForwarded(from, fakeimage, textnya, fake)
                 break
             case 'afk':
                 if (isLimit(sender)) return
