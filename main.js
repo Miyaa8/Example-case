@@ -25,6 +25,7 @@ const prefix = '!'
 const apikey = 'LindowApi' // Get in lindow-api.herokuapp.com
 
 // Database
+const afk = JSON.parse(fs.readFileSync('./core/afk.json'))
 let _limit = JSON.parse(fs.readFileSync('./core/limit.json'))
 firstlimit = 25
 
@@ -65,6 +66,12 @@ ev.on('chat-update', async (msg) => {
         const ownerNumber = ["6288291579481@s.whatsapp.net"]
         const isOwner = ownerNumber.includes(senderr)
         
+        const mentionByTag = type == "extendedTextMessage" && msg.message.extendedTextMessage.contextInfo != null ? msg.message.extendedTextMessage.contextInfo.mentionedJid : []
+        const mentionByReply = type == "extendedTextMessage" && msg.message.extendedTextMessage.contextInfo != null ? msg.message.extendedTextMessage.contextInfo.participant || "" : ""
+        const mention = typeof(mentionByTag) == 'string' ? [mentionByTag] : mentionByTag
+        mention != undefined ? mention.push(mentionByReply) : []
+        const mentionUser = mention != undefined ? mention.filter(n => n) : []
+
         const isMedia = (type === 'imageMessage' || type === 'videoMessage')
         const isQStick = type === 'extendedTextMessage' && content.includes('stickerMessage')
         const isQImg = type === 'extendedTextMessage' && content.includes('imageMessage')
@@ -73,6 +80,23 @@ ev.on('chat-update', async (msg) => {
 
         printLog(isCmd, jid, groupSubject, isGroup)
         
+        // Afk
+        for (let x of mentionUser) {
+            if (afk.hasOwnProperty(x.split('@')[0])) {
+            ini_txt = "Maaf user yang anda reply atau tag sedang afk. "
+              if (afk[x.split('@')[0]] != "") {
+                ini_txt += "Dengan alasan " + afk[x.split('@')[0]]
+                  }
+                  wa.reply(from, ini_txt, msg)
+                }
+            }
+            if (afk.hasOwnProperty(senderr.split('@')[0])) {
+            wa.reply(from, "Anda telah keluar dari mode afk.", msg)
+            delete afk[senderr.split('@')[0]]
+            fs.writeFileSync("./core/afk.json", JSON.stringify(afk))
+        }
+        
+        // Limit
         const limitAdd = (senderr) => {
           if (isOwner) {return false;}
           let position = false
@@ -130,7 +154,8 @@ ev.on('chat-update', async (msg) => {
           return false
           }
         }
-        
+        // End limit
+
         switch (command) {
             case 'help':
                 wa.reply(from, `Halo ${pushname}
@@ -163,8 +188,19 @@ Available Feature
 23. *${prefix}resetlimit*
 24. *${prefix}togif*
 25. *${prefix}tovideo*
+26. *${prefix}afk*
 
 > for eval`, msg)
+                break
+            case 'afk':
+                alasan = args.join(" ")
+                afk[senderr.split('@')[0]] = alasan.toLowerCase()
+                fs.writeFileSync("./core/afk.json", JSON.stringify(afk))
+                ini_txt = "Anda telah afk. "
+                if (alasan != "") {
+                ini_txt += "Dengan alasan " + alasan
+                }
+                wa.reply(from, ini_txt, msg)
                 break
             case 'tovideo':
                 if (msg.message.extendedTextMessage.contextInfo.quotedMessage.stickerMessage.isAnimated === true){
