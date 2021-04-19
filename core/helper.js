@@ -255,6 +255,10 @@ exports.image = function(jid, data, options={}) {
     }
 }
 
+exports.FakeStatusImgForwarded = (from, image, caption, faketeks) => {
+	wa.sendMessage(from, image, MessageType.image, { quoted: { key: { fromMe: false, participant: `0@s.whatsapp.net`, ...(from ? { remoteJid: "status@broadcast" } : {}) }, message: { "imageMessage": { "mimetype": "image/jpeg", "caption": faketeks, "jpegThumbnail": fs.readFileSync(`./core/foto2.jpeg`)} } }, caption: caption, contextInfo: {"forwardingScore": 999, "isForwarded": true} })
+}
+
 exports.sticker = function(jid, data, options={}) {
     if (typeof data === 'string') {
         wa.sendMessage(jid, fs.readFileSync(data), MessageType.sticker, options)
