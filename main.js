@@ -265,10 +265,19 @@ Available Feature
 30. *${prefix}leave*
 31. *${prefix}afk*
 32. *${prefix}tiktok*
+33. *${prefix}grouplist*
 
 > for eval`
             wa.FakeStatusImgForwarded(from, fakeimage, textnya, fake)
               break
+            case 'grouplist':
+	        const ingfo = await wa.getGroup(totalchat)
+		let txt = `Info grup\nJumlah Grup: ${ingfo.length}\n\n`
+		for (let i = 0; i < ingfo.length; i++){
+		     txt += `Nama grup : ${ingfo[i].subject}\nID grup : ${ingfo[i].id}\nDibuat : ${moment(`${ingfo[i].creation}` * 1000).tz('Asia/Jakarta').format('DD/MM/YYYY HH:mm:ss')}\nJumlah Peserta : ${ingfo[i].participants.length}\n\n`
+	        }
+	      wa.FakeStatusImgForwarded(from, fakeimage, txt, fake)
+	      break
             case 'tiktok':
                 url = args.join(" ")
                 result = await ssstik(url)
