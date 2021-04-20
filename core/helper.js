@@ -11,6 +11,24 @@ const request = require('request');
 
 const wa = con.Whatsapp
 
+exports.sendImage = async(from, buffer, caption = "") => {
+    await wa.sendMessage(from, buffer, MessageType.image, { caption: caption })
+}
+
+exports.getUserName = async(jid) => {
+    const user = wa.contacts[jid]
+    return user != undefined ? user.notify : ""
+}
+
+exports.getPictProfile = async(mids) => {
+    try {
+        var url = await wa.getProfilePicture(mids)
+    } catch {
+        var url = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'
+    }
+    return url
+}
+
 exports.sendMediaURL = async(to, url, text="", msg, mids=[]) =>{
 	if(mids.length > 0){
 		text = normalizeMention(to, text, mids)
