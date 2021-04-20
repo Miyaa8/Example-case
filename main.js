@@ -22,6 +22,8 @@ const {
     getRandom,
     color
 } = require('./utils')
+const { ssstik } = require("./core/tiktok.js")
+
 const ffmpeg = require('fluent-ffmpeg')
 const fs = require('fs')
 const axios = require('axios')
@@ -261,9 +263,17 @@ Available Feature
 29. *${prefix}demote*
 30. *${prefix}leave*
 31. *${prefix}afk*
+32. *${prefix}tiktok*
 
 > for eval`
             wa.FakeStatusImgForwarded(from, fakeimage, textnya, fake)
+              break
+            case 'tiktok':
+                url = args.join(" ")
+                result = await ssstik(url)
+                console.log(result)
+                buf = await getBuffer(`${result.videonowm}`)
+                ev.sendMessage(from, buf, MessageType.video, {mimetype: 'video/mp4', filename: `tiktok.mp4`, quoted: msg, caption: `${result.text}\n\nUrl music : ${result.music}`})
               break
             case 'leave':
               if (!isOwner) return reply('only for owner')
@@ -297,16 +307,16 @@ Available Feature
               break
             case 'tovideo':
                 if(isLimit(sender)) return
-	        	if (msg.message.extendedTextMessage.contextInfo.quotedMessage.stickerMessage.isAnimated === true){
-		        const encmedia = JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo
-		    	const media = await ev.downloadAndSaveMediaMessage(encmedia)
-		    	const uploadn = await wa.uptonaufal(media, Date.now() + '.webp')
-			    const test = await axios.get(`http://nzcha-apii.herokuapp.com/webp-to-mp4?url=${uploadn.result.image}`)
-				await wa.sendMediaURL(from, test.data.result, 'Nih')
-			    fs.unlinkSync(media)
-			    }
-			    await limitAdd(sender)
-				break
+	        if (msg.message.extendedTextMessage.contextInfo.quotedMessage.stickerMessage.isAnimated === true){
+	        const encmedia = JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo
+		const media = await ev.downloadAndSaveMediaMessage(encmedia)
+		const uploadn = await wa.uptonaufal(media, Date.now() + '.webp')
+                const test = await axios.get(`http://nzcha-apii.herokuapp.com/webp-to-mp4?url=${uploadn.result.image}`)
+	        await wa.sendMediaURL(from, test.data.result, 'Nih')
+		fs.unlinkSync(media)
+	        }
+		await limitAdd(sender)
+	      break
             case 'togif':
                 if (isLimit(sender)) return
 			    if (msg.message.extendedTextMessage.contextInfo.quotedMessage.stickerMessage.isAnimated === true){
@@ -336,8 +346,8 @@ Available Feature
               const more = String.fromCharCode(8206)
               const readmore = more.repeat(4001)
               var kls = body.slice(10)
-				    	var has = kls.split("|")[0];
-					    var kas = kls.split("|")[1];
+	      var has = kls.split("|")[0];
+	      var kas = kls.split("|")[1];
               wa.reply(from, `${has}`+readmore+`${kas}`, msg)
               await limitAdd(sender)
               break
