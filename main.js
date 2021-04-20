@@ -23,6 +23,7 @@ const {
     color
 } = require('./utils')
 const { ssstik } = require("./core/tiktok.js")
+const { convertSticker } = require('./core/swm.js')
 
 const ffmpeg = require('fluent-ffmpeg')
 const fs = require('fs')
@@ -266,10 +267,26 @@ Available Feature
 31. *${prefix}afk*
 32. *${prefix}tiktok*
 33. *${prefix}grouplist*
+34. *${prefix}swm*
 
 > for eval`
             wa.FakeStatusImgForwarded(from, fakeimage, textnya, fake)
               break
+            case 'swm':
+            if (type === 'imageMessage' || isQImg){
+            var kls = body.slice(5)
+	    var pack = kls.split("|")[0];
+            var author = kls.split("|")[1];
+            const getbuff = isQImg ? JSON.parse(JSON.stringify(msg).replace('quotedM','m')).message.extendedTextMessage.contextInfo : msg
+            const dlfile = await ev.downloadMediaMessage(getbuff)
+            const bas64 = `data:image/jpeg;base64,${dlfile.toString('base64')}`
+            var mantap = await convertSticker(bas64, `${author}`, `${pack}`)
+            var imageBuffer = new Buffer.from(mantap, 'base64');
+            ev.sendMessage(from, imageBuffer, MessageType.sticker, {quoted: msg})
+            } else {
+	          reply('Format Salah!')
+            }
+            break
             case 'grouplist':
 	        const ingfo = await wa.getGroup(totalchat)
 		let txt = `Info grup\nJumlah Grup: ${ingfo.length}\n\n`
