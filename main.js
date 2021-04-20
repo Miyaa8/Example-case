@@ -121,7 +121,6 @@ ev.on('chat-update', async (msg) => {
         const arg = body.substring(body.indexOf(' ') + 1)
         const args = body.trim().split(/ +/).slice(1)
         const isCmd = body.startsWith(prefix)
-        ev.chatRead(from)
         const totalchat = await ev.chats.all()
         const groupMetadata = isGroup ? await ev.groupMetadata(from) : ''
         const groupSubject = isGroup ? groupMetadata.subject : ''
@@ -149,7 +148,9 @@ ev.on('chat-update', async (msg) => {
         const isQImg = type === 'extendedTextMessage' && content.includes('imageMessage')
         const isQVid = type === 'extendedTextMessage' && content.includes('videoMessage')
         chats = (type === 'conversation') ? msg.message.conversation : (type === 'extendedTextMessage') ? msg.message.extendedTextMessage.text : ''
-
+        
+        ev.chatRead(from) // Auto Read
+        ev.updatePresence(from, Presence.available) // Always online
         printLog(isCmd, jid, groupSubject, isGroup)
         
         for (let x of mentionUser) {
@@ -198,7 +199,7 @@ ev.on('chat-update', async (msg) => {
           fs.writeFileSync('./core/limit.json', JSON.stringify(_limit))
           ev.sendMessage(from, `Sisa limit anda : *${limitCounts}*`, MessageType.text, { quoted : msg})
           }
-				}
+        }
 				
 	const isLimit = (senderr) =>{
             if (isOwner) {return false;}
