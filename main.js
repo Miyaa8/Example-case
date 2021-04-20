@@ -259,6 +259,8 @@ Available Feature
 27. *${prefix}join*
 28. *${prefix}promote*
 29. *${prefix}demote*
+30. *${prefix}leave*
+31. *${prefix}afk*
 
 > for eval`
             wa.FakeStatusImgForwarded(from, fakeimage, textnya, fake)
