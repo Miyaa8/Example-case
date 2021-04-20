@@ -15,6 +15,7 @@
     "fluent-ffmpeg": "*",
     "axios": "*",
     "qs": "*",
+    "util": "*",
     "request": "*",
     "cheerio": "*",
     "node-fetch": "*",
