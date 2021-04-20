@@ -48,13 +48,6 @@ function printLog(isCmd, sender, groupName, isGroup) {
     if (isCmd && !isGroup) { return console.log(color(`[${time}]`, 'yellow'), color('[EXEC]', 'aqua'), color(`${sender.split('@')[0]}`, 'lime')) }
 }
 
-ev.on('group-update', async(msg) => {
-  try {
-    console.log(msg)
-    } catch (e) {
-   console.log(chalk.whiteBright("|"), chalk.keyword("aqua")("[  ERROR  ]"), chalk.keyword("red")(e))
-    }
-})
 
 ev.on('group-participants-update', async(msg) => {
     try {
@@ -80,33 +73,33 @@ ev.on('group-participants-update', async(msg) => {
                     await ev.sendMessage(from, text, MessageType.text)
                 }
                 if (msg.action == 'promote') {
-					      ppimg = await wa.getPictProfile(x)
-					      num = msg.participants[0]
-			          var thu = await ev.getStatus(num, MessageType.text)
-			          if(thu.status == '401'){
-			            thu.status = 'Not found'
-			          }
-			          teks = `*❏ PROMOTE-DETECTED*\n\nUsername : ${username} (@${num.split('@')[0]})\n\nBio : ${thu.status}\n\nDate : ${time} ${bulan} 2021\n\nGroup : ${group.subject}\n\nDon't break the rules!`
-			          buff = await getBuffer(ppimg)
-			          ev.sendMessage(from, buff, MessageType.image, {caption: teks, contextInfo: {"mentionedJid": [num]}})
+	      	    ppimg = await wa.getPictProfile(x)
+		    num = msg.participants[0]
+	            var thu = await ev.getStatus(num, MessageType.text)
+	            if(thu.status == '401'){
+	            thu.status = 'Not found'
+	        }
+		teks = `*❏ PROMOTE-DETECTED*\n\nUsername : ${username} (@${num.split('@')[0]})\n\nBio : ${thu.status}\n\nDate : ${time} ${bulan} 2021\n\nGroup : ${group.subject}\n\nDon't break the rules!`
+	        buff = await getBuffer(ppimg)
+		ev.sendMessage(from, buff, MessageType.image, {caption: teks, contextInfo: {"mentionedJid": [num]}})
                 }
                 if (msg.action == 'demote') {
-					      ppimg = await wa.getPictProfile(x)
-					      num = msg.participants[0]
-			          var thu = await ev.getStatus(num, MessageType.text)
-			          if(thu.status == '401'){
-			            thu.status = 'Not found'
-			          }
-			          teks = `*❏ DEMOTE-DETECTED*\n\nUsername : ${username} (@${num.split('@')[0]})\n\nBio : ${thu.status}\n\nDate : ${time} ${bulan} 2021\n\nGroup : ${group.subject}\n\nKasian Di Demote`
-			          buff = await getBuffer(ppimg)
-			          ev.sendMessage(from, buff, MessageType.image, {caption: teks, contextInfo: {"mentionedJid": [num]}})
+                ppimg = await wa.getPictProfile(x)
+		num = msg.participants[0]
+	        var thu = await ev.getStatus(num, MessageType.text)
+		if(thu.status == '401'){
+		thu.status = 'Not found'
+	        }
+	        teks = `*❏ DEMOTE-DETECTED*\n\nUsername : ${username} (@${num.split('@')[0]})\n\nBio : ${thu.status}\n\nDate : ${time} ${bulan} 2021\n\nGroup : ${group.subject}\n\nKasian Di Demote`
+                buff = await getBuffer(ppimg)
+                ev.sendMessage(from, buff, MessageType.image, {caption: teks, contextInfo: {"mentionedJid": [num]}})
                 }
               } catch {
                 continue
             }
         }
     } catch (e) {
-        console.log(chalk.whiteBright("â”œ"), chalk.keyword("aqua")("[  ERROR  ]"), chalk.keyword("red")(e))
+        console.log(chalk.whiteBright("|"), chalk.keyword("aqua")("[  ERROR  ]"), chalk.keyword("red")(e))
     }
 })
 
@@ -119,9 +112,6 @@ ev.on('chat-update', async (msg) => {
         if (msg.key.fromMe) return;
         const { from, sender, isGroup, isEphemeral, quoted, mentionedJid, type } = msg
         let { body } = msg
-        if (msg.messageStubType === 'GROUP_CHANGE_DESCRIPTION') {
-        console.log('gor')
-        }
         let { name, vname, notify, verify , jid } = sender
         pushname = name || vname || notify || verify
         body = (type === 'conversation' && body.startsWith(prefix)) ? body : (((type === 'imageMessage' || type === 'videoMessage') && body) && body.startsWith(prefix)) ? body : ((type === 'ephemeralMessage') && body.startsWith(prefix)) ? body : ((type === 'extendedTextMessage') && body.startsWith(prefix)) ? body : ''
@@ -208,9 +198,9 @@ ev.on('chat-update', async (msg) => {
           }
 				}
 				
-				const isLimit = (senderr) =>{
-		      if (isOwner) {return false;}
-		      let position = false
+	const isLimit = (senderr) =>{
+            if (isOwner) {return false;}
+	    let position = false
             for (let i of _limit) {
             if (i.id === senderr.jid) {
               	let limits = i.limit
@@ -279,14 +269,14 @@ Available Feature
               break
             case 'promote':
               if (!isAdmin) return reply('only for admin group')
-		      await reply('success')
-			  ev.groupMakeAdmin(from, mentionUser)
-			  break
-		    case 'demote':
-			  if (!isAdmin) return reply('only for admin group')
-		  	await reply('sukses')
-		  	ev.groupDemoteAdmin(from, mentionUser)
-			  break
+	      await reply('success')
+              ev.groupMakeAdmin(from, mentionUser)
+	      break
+            case 'demote':
+              if (!isAdmin) return reply('only for admin group')
+		await reply('sukses')
+		ev.groupDemoteAdmin(from, mentionUser)
+	        break
             case 'join':
               if (!isOwner) return wa.reply(from, 'This command only for owner or mega', msg)
               if (args.length == 0) return await wa.reply(from, 'Link group?', msg)
